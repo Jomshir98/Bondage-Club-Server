@@ -1,19 +1,11 @@
 "use strict";
 require('newrelic');
 const base64id = require("base64id");
+const fs = require("fs");
 
 // Reads the SSL key and certificate, if there's no file available, we switch to regular http
-var SyncRequest = require("sync-request");
-var ServerKey = null;
-if ((process.env.SERVER_KEY0 != null) && (process.env.SERVER_KEY0 != "")) { try { ServerKey = SyncRequest("GET", process.env.SERVER_KEY0).getBody(); } catch(err) {} }
-if ((ServerKey == null) && (process.env.SERVER_KEY1 != null) && (process.env.SERVER_KEY1 != "")) { try { ServerKey = SyncRequest("GET", process.env.SERVER_KEY1).getBody(); } catch(err) {} }
-if ((ServerKey == null) && (process.env.SERVER_KEY2 != null) && (process.env.SERVER_KEY2 != "")) { try { ServerKey = SyncRequest("GET", process.env.SERVER_KEY2).getBody(); } catch(err) {} }
-var ServerCert = null;
-if ((process.env.SERVER_CERT0 != null) && (process.env.SERVER_CERT0 != "")) { try { ServerCert = SyncRequest("GET", process.env.SERVER_CERT0).getBody(); } catch(err) {} }
-if ((ServerCert == null) && (process.env.SERVER_CERT1 != null) && (process.env.SERVER_CERT1 != "")) { try { ServerCert = SyncRequest("GET", process.env.SERVER_CERT1).getBody(); } catch(err) {} }
-if ((ServerCert == null) && (process.env.SERVER_CERT2 != null) && (process.env.SERVER_CERT2 != "")) { try { ServerCert = SyncRequest("GET", process.env.SERVER_CERT2).getBody(); } catch(err) {} }
-console.log("Using Server Key: " + ServerKey);
-console.log("Using Server Certificate: " + ServerCert);
+var ServerKey = fs.readFileSync("/etc/letsencrypt/live/02349898.xyz/privkey.pem");
+var ServerCert = fs.readFileSync("/etc/letsencrypt/live/02349898.xyz/fullchain.pem");
 
 // Enforce https with a certificate
 var App;
@@ -66,10 +58,10 @@ var ChatRoomProduction = [
 	process.env.PRODUCTION9 || ""
 ];
 var NextMemberNumber = 1;
-var OwnershipDelay = 604800000; // 7 days delay for ownership events
-var LovershipDelay = 604800000; // 7 days delay for lovership events
-var DifficultyDelay = 604800000; // 7 days to activate the higher difficulty tiers
-const IP_CONNECTION_LIMIT = 64; // Limit of connections per IP address
+var OwnershipDelay = 0; // 7 days delay for ownership events
+var LovershipDelay = 0; // 7 days delay for lovership events
+var DifficultyDelay = 0; // 7 days to activate the higher difficulty tiers
+const IP_CONNECTION_LIMIT = Infinity; // Limit of connections per IP address
 const IP_CONNECTION_PROXY_HEADER = "x-forwarded-for"; // Header with real IP, if set by trusted proxy (lowercase)
 
 // DB Access
