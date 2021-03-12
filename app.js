@@ -22,6 +22,7 @@ if ((ServerKey == null) || (ServerCert == null)) {
 
 // Starts socket.io to accept incoming connections on specified origins
 const socketio = require("socket.io");
+/** @type {socketio.ServerOptions} */
 var Options = {
 	maxHttpBufferSize: 200000,
 	pingTimeout: 30000,
@@ -36,7 +37,7 @@ var Options = {
 if ((process.env.CORS_ORIGIN0 != null) && (process.env.CORS_ORIGIN0 != ""))
 	Options.cors = { origin: [process.env.CORS_ORIGIN0 || "", process.env.CORS_ORIGIN1 || "", process.env.CORS_ORIGIN2 || "", process.env.CORS_ORIGIN3 || "", process.env.CORS_ORIGIN4 || "", process.env.CORS_ORIGIN5 || ""] };
 else 
-	Options.cors = { origin: '*' };
+	Options.cors = { origin: '*', credentials: true };
 var IO = new socketio.Server(App, Options);
 
 // Main game objects
@@ -273,10 +274,7 @@ function AccountCreate(data, socket) {
 
 // Gets the current environment for online play (www.bondageprojects.com is considered production)
 function AccountGetEnvironment(socket) {
-	if ((socket != null) && (socket.request != null) && (socket.request.headers != null) && (socket.request.headers.origin != null) && (socket.request.headers.origin != "")) {
-		if (ChatRoomProduction.indexOf(socket.request.headers.origin.toLowerCase()) >= 0) return "PROD";
-		else return "DEV";
-	} else return (Math.round(Math.random() * 1000000000000)).toString();
+	return "JOMSHIR";
 }
 
 // Makes sure the account data is valid, creates the missing fields if we need to
